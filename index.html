@@ -1,1 +1,110 @@
-[ВСТАВЬТЕ ВАШ HTML КОД СЮДА]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launching Soon | Global Platform</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root { --bg-color: #0B0E14; --cyan: #00F0FF; --violet: #7000FF; --mint: #00E5A1; }
+        body { background-color: var(--bg-color); color: #fff; overflow-x: hidden; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; outline: none; }
+        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAAAAAAAAAAAAAAAAAAAAAAD///8zMzPv9Q31AAAACHRSTlMAMwA1MzU3Nzc3Nzc3OwAAAAlwSFlzAAAAxAAAB8QBg2w1XAAAAEdJREFUOMtjYMAEmBgYRgEjAwMDA0sDAwMjAwMjAwMjIwMDAyMDAwMjAwMDIwMDAyMDAwMjAwMjAwMjAwMDAwMjAwMDAwMjAwMA8QoP6e7+0X8AAAAASUVORK5CYII='); opacity: 0.05; pointer-events: none; z-index: 1; }
+        .glass-card { background: rgba(18, 22, 33, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .lang-pill { transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; }
+        .lang-pill.active { color: var(--cyan); font-weight: 600; }
+        .btn-gradient { background: linear-gradient(135deg, var(--cyan), var(--violet)); transition: all 0.3s ease; cursor: pointer; }
+        .btn-gradient:hover { filter: brightness(1.15); box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); transform: translateY(-1px); }
+        .fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .cursor::after { content: '|'; animation: blink 1s step-end infinite; color: var(--cyan); margin-left: 2px; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .input-glow:focus { box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); border-color: var(--cyan); }
+        .success-msg { color: var(--mint); font-size: 0.875rem; opacity: 0; transition: opacity 0.3s ease; }
+        .success-msg.visible { opacity: 1; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <canvas id="bg-canvas"></canvas>
+    <div class="noise-overlay"></div>
+    
+    <div class="relative z-10 flex flex-col min-h-screen">
+        <header class="w-full p-6 flex justify-between items-center fade-in-up delay-100">
+            <div class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-neonCyan"></span>
+                SHI1OF
+            </div>
+            <div class="glass-card px-2 py-1 rounded-full flex items-center gap-1 text-sm font-medium">
+                <button onclick="setLanguage('ru')" class="lang-pill px-3 py-1 rounded-full text-textMuted hover:text-white" data-lang="ru">RU</button>
+                <button onclick="setLanguage('en')" class="lang-pill px-3 py-1 rounded-full text-textMuted hover:text-white active" data-lang="en">EN</button>
+                <button onclick="setLanguage('cn')" class="lang-pill px-3 py-1 rounded-full text-textMuted hover:text-white" data-lang="cn">CN</button>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center justify-center px-4 text-center -mt-16">
+            <div class="w-full h-48 md:h-64 lg:h-80 relative mb-8 opacity-80 pointer-events-none fade-in-up delay-200"></div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 min-h-[80px] md:min-h-[90px] flex items-center justify-center fade-in-up delay-200">
+                <span id="typewriter-text" class="bg-gradient-to-r from-white via-white to-textMuted bg-clip-text text-transparent cursor"></span>
+            </h1>
+            <p id="subtitle-text" class="text-textMuted text-lg md:text-xl max-w-2xl mb-12 leading-relaxed fade-in-up delay-300">Site under development. Subscribe for updates.</p>
+            <div id="countdown-container" class="flex gap-6 mb-12 fade-in-up delay-300">
+                <div class="glass-card px-4 py-3 rounded-lg flex flex-col items-center min-w-[80px]">
+                    <span id="days" class="text-2xl md:text-3xl font-bold text-neonCyan">00</span>
+                    <span class="text-xs text-textMuted uppercase tracking-widest mt-1">Days</span>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-lg flex flex-col items-center min-w-[80px]">
+                    <span id="hours" class="text-2xl md:text-3xl font-bold text-neonViolet">00</span>
+                    <span class="text-xs text-textMuted uppercase tracking-widest mt-1">Hours</span>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-lg flex flex-col items-center min-w-[80px]">
+                    <span id="minutes" class="text-2xl md:text-3xl font-bold text-white">00</span>
+                    <span class="text-xs text-textMuted uppercase tracking-widest mt-1">Mins</span>
+                </div>
+            </div>
+            <div class="w-full max-w-md fade-in-up delay-500">
+                <form id="sub-form" class="flex flex-col sm:flex-row gap-3" onsubmit="handleSubscribe(event)">
+                    <input type="email" id="email-input" required class="flex-1 bg-secondaryLayer/80 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-textMuted outline-none input-glow transition-all duration-300 text-center sm:text-left" placeholder="Email address">
+                    <button type="submit" id="submit-btn" class="btn-gradient text-white font-semibold px-6 py-3 rounded-lg whitespace-nowrap shadow-lg">
+                        <span id="btn-text">Notify Me</span>
+                    </button>
+                </form>
+                <p id="success-msg" class="success-msg mt-3 font-medium">✓ <span id="success-text">Thanks! You're on the list.</span></p>
+                <p id="privacy-text" class="text-xs text-textMuted mt-3 opacity-70">We respect your privacy.</p>
+            </div>
+        </main>
+
+        <footer class="w-full p-6 text-center fade-in-up delay-500">
+            <p class="text-sm text-textMuted">© 2026 SHI1OF. Global Initiative.</p>
+        </footer>
+    </div>
+
+    <script>
+        const i18n = {
+            en: { headline: "Platform launching soon", subtitle: "Site under development. Subscribe for updates.", placeholder: "Email address", btn: "Notify Me", success: "Thanks! You're on the list.", privacy: "We respect your privacy.", days: "Days", hours: "Hours", mins: "Mins" },
+            ru: { headline: "Запуск платформы скоро", subtitle: "Сайт в разработке. Подпишитесь на обновления.", placeholder: "Адрес электронной почты", btn: "Уведомить", success: "Спасибо! Вы в списке.", privacy: "Мы уважаем вашу конфиденциальность.", days: "Дней", hours: "Часов", mins: "Минут" },
+            cn: { headline: "平台即将上线", subtitle: "网站开发中。订阅以获取更新。", placeholder: "电子邮件地址", btn: "通知我", success: "谢谢！您已在名单上。", privacy: "我们尊重您的隐私。", days: "天", hours: "时", mins: "分" }
+        };
+        let currentLang = 'en';
+        function setLanguage(lang) { currentLang = lang; document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('active')); document.querySelector(`.lang-pill[data-lang="${lang}"]`).classList.add('active'); const c = i18n[lang]; document.getElementById('email-input').placeholder = c.placeholder; document.getElementById('btn-text').innerText = c.btn; document.getElementById('success-text').innerText = c.success; document.getElementById('privacy-text').innerText = c.privacy; document.querySelectorAll('.text-xs.uppercase')[0].innerText = c.days; document.querySelectorAll('.text-xs.uppercase')[1].innerText = c.hours; document.querySelectorAll('.text-xs.uppercase')[2].innerText = c.mins; document.getElementById('subtitle-text').innerText = c.subtitle; typewriter(c.headline); }
+        let typeInterval;
+        function typewriter(text) { const el = document.getElementById('typewriter-text'); if(typeInterval) clearInterval(typeInterval); let i = 0; el.innerText = ''; function type() { if (i < text.length) { el.innerText += text.charAt(i); i++; setTimeout(type, Math.random() * 50 + 40); } } type(); }
+        const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + 30);
+        function updateCountdown() { const now = new Date(); const diff = targetDate - now; document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24)).toString().padStart(2,'0'); document.getElementById('hours').innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)).toString().padStart(2,'0'); document.getElementById('minutes').innerText = Math.floor((diff % (1000*60*60)) / (1000*60)).toString().padStart(2,'0'); }
+        setInterval(updateCountdown, 1000); updateCountdown();
+        function handleSubscribe(e) { e.preventDefault(); const btn = document.getElementById('submit-btn'); const input = document.getElementById('email-input'); const successMsg = document.getElementById('success-msg'); btn.innerHTML = '<span class="animate-pulse">...</span>'; setTimeout(() => { btn.innerHTML = `<span id="btn-text">${i18n[currentLang].btn}</span>`; input.value = ''; successMsg.classList.add('visible'); setTimeout(() => successMsg.classList.remove('visible'), 3000); }, 1000); }
+        function initThree() { const canvas = document.getElementById('bg-canvas'); const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); renderer.setSize(window.innerWidth, window.innerHeight); const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x0B0E14, 0.03); const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100); camera.position.set(0, 0, 12); const rotorGroup = new THREE.Group(); scene.add(rotorGroup); const neonCyanMat = new THREE.MeshStandardMaterial({ color: 0x00F0FF, emissive: 0x00F0FF, emissiveIntensity: 2, roughness: 0.2, metalness: 0.8 }); const neonVioletMat = new THREE.MeshStandardMaterial({ color: 0x7000FF, emissive: 0x7000FF, emissiveIntensity: 1.5, roughness: 0.2, metalness: 0.8 }); const axisGeo = new THREE.CylinderGeometry(0.4, 0.4, 10, 32); const axis = new THREE.Mesh(axisGeo, neonVioletMat); axis.rotation.x = Math.PI / 2; rotorGroup.add(axis); const helixGroup = new THREE.Group(); const helixGeo = new THREE.SphereGeometry(0.15, 8, 8); for(let i=0; i<40; i++) { const mesh = new THREE.Mesh(helixGeo, neonVioletMat.clone()); const t = (i / 40) * Math.PI * 8; const r = 1.5; const y = (i / 40) * 6 - 3; mesh.position.set(Math.cos(t) * r, y, Math.sin(t) * r); helixGroup.add(mesh); } rotorGroup.add(helixGroup); const particleCount = 500; const particlesGeo = new THREE.BufferGeometry(); const positions = new Float32Array(particleCount * 3); for(let i=0; i<particleCount; i++) { positions[i*3] = (Math.random() - 0.5) * 20; positions[i*3+1] = (Math.random() - 0.5) * 20; positions[i*3+2] = (Math.random() - 0.5) * 20; } particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3)); const particleMat = new THREE.PointsMaterial({ color: 0x00F0FF, size: 0.1, transparent: true, blending: THREE.AdditiveBlending }); const particleSystem = new THREE.Points(particlesGeo, particleMat); rotorGroup.add(particleSystem); const ambientLight = new THREE.AmbientLight(0x404040); scene.add(ambientLight); const pointLight1 = new THREE.PointLight(0x00F0FF, 2, 20); pointLight1.position.set(5, 5, 5); scene.add(pointLight1); const pointLight2 = new THREE.PointLight(0x7000FF, 2, 20); pointLight2.position.set(-5, -5, 5); scene.add(pointLight2); function animate() { requestAnimationFrame(animate); rotorGroup.rotation.y += 0.005; rotorGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.1; helixGroup.rotation.z -= 0.01; renderer.render(scene, camera); } animate(); window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }); }
+        window.addEventListener('DOMContentLoaded', () => { setLanguage('en'); initThree(); });
+    </script>
+</body>
+</html>
